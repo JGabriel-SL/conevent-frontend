@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import type { EventStatus } from "@/types/event";
+import { toast } from "sonner";
 
 const statusColors: Record<string, string> = {
   Planejamento: "bg-warning/10 text-warning border-warning/20",
@@ -36,8 +37,11 @@ export default function Events() {
   );
 
   const handleSubmit = () => {
-    if (!form.name || !form.iniDate || !form.endDate) return;
-    console.log(form);
+    if (!form.name) {toast.warning("Você esqueceu de informar o nome do evento! Por favor, nos diga o nome do evento."); return;}
+    if (!form.iniDate || !form.endDate) {toast.warning("Você esqueceu de informar a data de inicio ou fim do evento."); return;}
+    if (!form.location) {toast.warning("Você esqueceu de informar o local do evento!"); return;}
+    if (!form.budget) {toast.warning("Você esqueceu de informar o orçamento do evento!"); return;}
+    
     addEvent({ ...form, budget: Number(form.budget) || 0 });
     setForm({ name: "", iniDate: "", endDate: "", iniTime: "", endTime: "", location: "", budget: "", status: "Planejamento" });
     setOpen(false);
