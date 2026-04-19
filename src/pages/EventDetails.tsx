@@ -44,7 +44,11 @@ export default function EventDetails() {
             <Badge variant="outline" className={statusColors[event.status]}>{event.status}</Badge>
           </div>
           <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground flex-wrap">
-            <span className="flex items-center gap-1"><Calendar className="h-4 w-4" />{format(new Date(event.date + "T12:00:00"), "dd MMM yyyy", { locale: ptBR })} · {event.time}</span>
+            <span className="flex items-center gap-1"><Calendar className="h-4 w-4" />{format(new Date(event.iniDate + "T12:00:00"), "dd MMM yyyy", { locale: ptBR })} · {event.iniTime}</span>
+            {
+              event.iniDate !== event.endDate ?<span className="flex items-center gap-1">·<Calendar className="h-4 w-4" />{format(new Date(event.endDate + "T12:00:00"), "dd MMM yyyy", { locale: ptBR })} · {event.endTime}</span>
+              : ""
+            }
             <span className="flex items-center gap-1"><MapPin className="h-4 w-4" />{event.location}</span>
             <span className="flex items-center gap-1"><DollarSign className="h-4 w-4" />R$ {event.budget.toLocaleString("pt-BR")}</span>
           </div>

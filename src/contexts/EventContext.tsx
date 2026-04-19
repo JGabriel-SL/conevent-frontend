@@ -24,9 +24,9 @@ const EventContext = createContext<EventContextType | undefined>(undefined);
 const generateId = () => Math.random().toString(36).substring(2, 11);
 
 const SAMPLE_EVENTS: EventData[] = [
-  { id: "e1", name: "Conferência Tech 2026", date: "2026-05-15", time: "09:00", location: "Centro de Convenções SP", budget: 50000, status: "Confirmado", createdAt: "2026-04-01" },
-  { id: "e2", name: "Workshop de Design", date: "2026-06-20", time: "14:00", location: "Hub Criativo RJ", budget: 15000, status: "Planejamento", createdAt: "2026-04-05" },
-  { id: "e3", name: "Festa de Fim de Ano", date: "2026-12-18", time: "20:00", location: "Espaço Jardins", budget: 80000, status: "Planejamento", createdAt: "2026-04-10" },
+  { id: "e1", name: "Conferência Tech 2026", iniDate: "2026-05-16", iniTime: "09:00", endDate: "2026-05-17", endTime: "09:00", location: "Centro de Convenções SP", budget: 50000, status: "Confirmado", createdAt: "2026-04-01" },
+  { id: "e2", name: "Workshop de Design", iniDate: "2026-06-20", iniTime: "14:00", endDate: "2026-06-20", endTime: "14:00", location: "Hub Criativo RJ", budget: 15000, status: "Planejamento", createdAt: "2026-04-05" },
+  { id: "e3", name: "Festa de Fim de Ano", iniDate: "2026-12-18", iniTime: "20:00", endDate: "2026-12-18", endTime: "20:00", location: "Espaço Jardins", budget: 80000, status: "Planejamento", createdAt: "2026-04-10" },
 ];
 
 const SAMPLE_BUDGET_ITEMS: BudgetItem[] = [

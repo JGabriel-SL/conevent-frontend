@@ -79,7 +79,7 @@ export default function Dashboard() {
                     <div className="min-w-0">
                       <p className="font-medium text-foreground truncate">{event.name}</p>
                       <p className="text-sm text-muted-foreground">
-                        {format(new Date(event.date + "T12:00:00"), "dd MMM yyyy", { locale: ptBR })} · {event.time} · {event.location}
+                        {format(new Date(event.iniDate + "T12:00:00"), "dd MMM yyyy", { locale: ptBR })} · {event.iniTime} · {event.location}
                       </p>
                     </div>
                   </div>

@@ -24,12 +24,22 @@ export default function Events() {
   const { events, addEvent, deleteEvent } = useEvents();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ name: "", date: "", time: "", location: "", budget: "", status: "Planejamento" as EventStatus });
+  const [form, setForm] = useState(
+    { name: "", 
+      iniDate: "", 
+      endDate: "",
+      iniTime: "", 
+      endTime: "",
+      location: "", 
+      budget: "", 
+      status: "Planejamento" as EventStatus, }
+  );
 
   const handleSubmit = () => {
-    if (!form.name || !form.date) return;
+    if (!form.name || !form.iniDate || !form.endDate) return;
+    console.log(form);
     addEvent({ ...form, budget: Number(form.budget) || 0 });
-    setForm({ name: "", date: "", time: "", location: "", budget: "", status: "Planejamento" });
+    setForm({ name: "", iniDate: "", endDate: "", iniTime: "", endTime: "", location: "", budget: "", status: "Planejamento" });
     setOpen(false);
   };
 
@@ -55,12 +65,22 @@ export default function Events() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Data</Label>
-                  <Input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} />
+                  <Label>Data Inicio</Label>
+                  <Input type="date" value={form.iniDate} onChange={e => setForm({ ...form, iniDate: e.target.value })} />
                 </div>
                 <div className="space-y-2">
                   <Label>Hora</Label>
-                  <Input type="time" value={form.time} onChange={e => setForm({ ...form, time: e.target.value })} />
+                  <Input type="time" value={form.iniTime} onChange={e => setForm({ ...form, iniTime: e.target.value })} />
+                </div>
+              </div>
+               <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Data Fim</Label>
+                  <Input type="date" value={form.endDate} onChange={e => setForm({ ...form, endDate: e.target.value })} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Hora</Label>
+                  <Input type="time" value={form.endTime} onChange={e => setForm({ ...form, endTime: e.target.value })} />
                 </div>
               </div>
               <div className="space-y-2">
@@ -110,9 +130,19 @@ export default function Events() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-2">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Calendar className="h-4 w-4" />
-                  <span>{format(new Date(event.date + "T12:00:00"), "dd MMM yyyy", { locale: ptBR })} · {event.time}</span>
+                <div className="flex flex-col items-start gap-2 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Calendar className="h-4 w-4" />
+                    <span>{format(new Date(event.iniDate + "T12:00:00"), "dd MMM yyyy", { locale: ptBR })} · {event.iniTime}</span>
+                  </div>
+                  
+                  {event.iniDate !== event.endDate ?
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Calendar className="h-4 w-4" />
+                      <span>{format(new Date(event.endDate + "T12:00:00"), "dd MMM yyyy", { locale: ptBR })} · {event.endTime}</span>
+                    </div>
+                    : <div className="flex items-center  h-4 w-4 gap-2 text-sm text-muted-foreground">
+                      </div>}
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <MapPin className="h-4 w-4" />

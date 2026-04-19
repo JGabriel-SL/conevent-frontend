@@ -5,8 +5,10 @@ export type GuestStatus = "Pendente" | "Confirmado" | "Recusado";
 export interface EventData {
   id: string;
   name: string;
-  date: string;
-  time: string;
+  iniDate: string;
+  endDate: string;
+  iniTime: string;
+  endTime: string;
   location: string;
   budget: number;
   status: EventStatus;
