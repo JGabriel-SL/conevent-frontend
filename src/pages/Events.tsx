@@ -13,6 +13,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import type { EventStatus } from "@/types/event";
 import { toast } from "sonner";
+import { NumericFormat } from 'react-number-format';
 
 const statusColors: Record<string, string> = {
   Planejamento: "bg-warning/10 text-warning border-warning/20",
@@ -93,7 +94,19 @@ export default function Events() {
               </div>
               <div className="space-y-2">
                 <Label>Orçamento Previsto (R$)</Label>
-                <Input type="number" value={form.budget} onChange={e => setForm({ ...form, budget: e.target.value })} placeholder="0,00" />
+                <NumericFormat 
+                  customInput={Input}
+                  value={form.budget}
+                  onValueChange={(values) => {
+                    setForm({...form, budget: values.formattedValue})
+                  }}
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  prefix="R$ "
+                  decimalScale={2}
+                  fixedDecimalScale={true}
+                  placeholder="R$ 0,00"
+                  />
               </div>
               <div className="space-y-2">
                 <Label>Status</Label>
