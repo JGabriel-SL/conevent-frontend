@@ -1,0 +1,38 @@
+export type EventStatus = "Planejamento" | "Confirmado" | "Concluído" | "Cancelado";
+export type NegotiationStatus = "Buscando contato" | "Em negociação" | "Contrato Fechado" | "Descartado";
+export type GuestStatus = "Pendente" | "Confirmado" | "Recusado";
+
+export interface EventData {
+  id: string;
+  name: string;
+  date: string;
+  time: string;
+  location: string;
+  budget: number;
+  status: EventStatus;
+  createdAt: string;
+}
+
+export interface Supplier {
+  id: string;
+  company: string;
+  price: number;
+  contact: string;
+  status: NegotiationStatus;
+}
+
+export interface BudgetItem {
+  id: string;
+  eventId: string;
+  name: string;
+  suppliers: Supplier[];
+}
+
+export interface Guest {
+  id: string;
+  eventId: string;
+  name: string;
+  email: string;
+  phone: string;
+  status: GuestStatus;
+}
