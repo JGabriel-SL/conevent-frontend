@@ -42,6 +42,8 @@ export default function Events() {
     if (!form.iniDate || !form.endDate) {toast.warning("Você esqueceu de informar a data de inicio ou fim do evento."); return;}
     if (!form.location) {toast.warning("Você esqueceu de informar o local do evento!"); return;}
     if (!form.budget) {toast.warning("Você esqueceu de informar o orçamento do evento!"); return;}
+
+    console.log(form.budget);
     
     addEvent({ ...form, budget: Number(form.budget) || 0 });
     setForm({ name: "", iniDate: "", endDate: "", iniTime: "", endTime: "", location: "", budget: "", status: "Planejamento" });
@@ -94,11 +96,11 @@ export default function Events() {
               </div>
               <div className="space-y-2">
                 <Label>Orçamento Previsto (R$)</Label>
-                <NumericFormat 
+                 <NumericFormat 
                   customInput={Input}
                   value={form.budget}
                   onValueChange={(values) => {
-                    setForm({...form, budget: values.formattedValue})
+                    setForm({...form, budget: values.formattedValue.replace("R$", "").replace(".", "").replace(",", ".").trim()})
                   }}
                   thousandSeparator="."
                   decimalSeparator=","
@@ -106,7 +108,7 @@ export default function Events() {
                   decimalScale={2}
                   fixedDecimalScale={true}
                   placeholder="R$ 0,00"
-                  />
+                  /> 
               </div>
               <div className="space-y-2">
                 <Label>Status</Label>
