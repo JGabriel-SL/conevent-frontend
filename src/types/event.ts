@@ -21,6 +21,7 @@ export interface Supplier {
   price: number;
   contact: string;
   status: NegotiationStatus;
+  winner: boolean;
 }
 
 export interface BudgetItem {
@@ -28,6 +29,7 @@ export interface BudgetItem {
   eventId: string;
   name: string;
   suppliers: Supplier[];
+  hasAWinner: boolean;
 }
 
 export interface Guest {

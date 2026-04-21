@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Trash2, DollarSign, AlertTriangle, CheckCircle } from "lucide-react";
+import { Plus, Trash2, DollarSign, AlertTriangle, CheckCircle, BadgeCheck } from "lucide-react";
 import type { NegotiationStatus } from "@/types/event";
 
 const negotiationColors: Record<NegotiationStatus, string> = {
@@ -18,14 +18,15 @@ const negotiationColors: Record<NegotiationStatus, string> = {
   "Descartado": "bg-destructive/10 text-destructive",
 };
 
+
 export function BudgetTab({ eventId, eventBudget }: { eventId: string; eventBudget: number }) {
-  const { budgetItems, addBudgetItem, deleteBudgetItem, addSupplier, updateSupplier, deleteSupplier } = useEvents();
+  const { budgetItems, addBudgetItem, deleteBudgetItem, addSupplier, updateSupplier, deleteSupplier, setAWinnerSupplier} = useEvents();
   const items = budgetItems.filter(b => b.eventId === eventId);
 
   const [itemDialog, setItemDialog] = useState(false);
   const [itemName, setItemName] = useState("");
   const [supplierDialog, setSupplierDialog] = useState<string | null>(null);
-  const [supplierForm, setSupplierForm] = useState({ company: "", price: "", contact: "", status: "Buscando contato" as NegotiationStatus });
+  const [supplierForm, setSupplierForm] = useState({ company: "", price: "", contact: "", status: "Buscando contato" as NegotiationStatus, winner: false });
 
   const totalContracted = items.reduce((acc, item) =>
     acc + item.suppliers.filter(s => s.status === "Contrato Fechado").reduce((sum, s) => sum + s.price, 0), 0
@@ -35,7 +36,7 @@ export function BudgetTab({ eventId, eventBudget }: { eventId: string; eventBudg
 
   const handleAddItem = () => {
     if (!itemName) return;
-    addBudgetItem({ eventId, name: itemName, suppliers: [] });
+    addBudgetItem({ eventId, name: itemName, suppliers: [], hasAWinner: false });
     setItemName("");
     setItemDialog(false);
   };
@@ -43,7 +44,7 @@ export function BudgetTab({ eventId, eventBudget }: { eventId: string; eventBudg
   const handleAddSupplier = () => {
     if (!supplierDialog || !supplierForm.company) return;
     addSupplier(supplierDialog, { ...supplierForm, price: Number(supplierForm.price) || 0 });
-    setSupplierForm({ company: "", price: "", contact: "", status: "Buscando contato" });
+    setSupplierForm({ company: "", price: "", contact: "", status: "Buscando contato", winner: false });
     setSupplierDialog(null);
   };
 
@@ -88,9 +89,10 @@ export function BudgetTab({ eventId, eventBudget }: { eventId: string; eventBudg
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base">{item.name}</CardTitle>
                 <div className="flex items-center gap-2">
-                  <Button size="sm" variant="outline" onClick={() => setSupplierDialog(item.id)}>
-                    <Plus className="h-3 w-3 mr-1" />Fornecedor
-                  </Button>
+                    {item.hasAWinner ?
+                      "" 
+                      : <Button size="sm" variant="outline" onClick={() => setSupplierDialog(item.id)}><Plus className="h-3 w-3 mr-1" />Fornecedor </Button>
+                    }
                   <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive" onClick={() => deleteBudgetItem(item.id)}>
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -107,26 +109,52 @@ export function BudgetTab({ eventId, eventBudget }: { eventId: string; eventBudg
                       <TableHead>Contato</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead className="w-10"></TableHead>
+                      <TableHead className="w-10"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {item.suppliers.map((s) => (
-                      <TableRow key={s.id}>
-                        <TableCell className="font-medium">{s.company}</TableCell>
+                      <TableRow key={s.id} className={s.winner ? "bg-[#a7ddaa33]" : ""}>
+                        <TableCell className="font-medium">
+                          { s.winner ?  
+                            <div className="flex items-center">
+                              <BadgeCheck className="m-1" color="green" /> {s.company}
+                            </div>
+                           : s.company }
+                        </TableCell>
                         <TableCell>R$ {s.price.toLocaleString("pt-BR")}</TableCell>
                         <TableCell className="text-muted-foreground">{s.contact}</TableCell>
                         <TableCell>
-                          <Select value={s.status} onValueChange={(v) => updateSupplier(item.id, s.id, { status: v as NegotiationStatus })}>
-                            <SelectTrigger className="h-8 w-[160px]">
-                              <Badge variant="secondary" className={negotiationColors[s.status]}>{s.status}</Badge>
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Buscando contato">Buscando contato</SelectItem>
-                              <SelectItem value="Em negociação">Em negociação</SelectItem>
-                              <SelectItem value="Contrato Fechado">Contrato Fechado</SelectItem>
-                              <SelectItem value="Descartado">Descartado</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          {item.hasAWinner ? 
+                            <span className={negotiationColors[s.status] + " p-2 rounded-md"}>
+                              {s.status}
+                            </span>
+                             :
+                            <>
+                              <Select value={s.status} onValueChange={(v) => updateSupplier(item.id, s.id, { status: v as NegotiationStatus })}>
+                              <SelectTrigger className="h-8 w-[160px]">
+                                <Badge variant="secondary" className={negotiationColors[s.status]}>{s.status}</Badge>
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Buscando contato">Buscando contato</SelectItem>
+                                <SelectItem value="Em negociação">Em negociação</SelectItem>
+                                <SelectItem value="Contrato Fechado">Contrato Fechado</SelectItem>
+                                <SelectItem value="Descartado">Descartado</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            </>
+                          }
+                        </TableCell>
+                         <TableCell>
+                          {
+                            item.hasAWinner ?
+                             ""
+                            :
+                            <Button variant="ghost" className="h-7 text-destructive" onClick={() => setAWinnerSupplier(item.id, s.id, { winner: true, status: "Contrato Fechado" })}>
+                              Selecionar vencedor
+                            </Button>
+                          }
+                         
                         </TableCell>
                         <TableCell>
                           <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => deleteSupplier(item.id, s.id)}>

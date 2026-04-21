@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
 import { EventData, BudgetItem, Guest, Supplier } from "@/types/event";
+import { toast } from "sonner";
 
 interface EventContextType {
   events: EventData[];
@@ -14,6 +15,7 @@ interface EventContextType {
   addSupplier: (budgetItemId: string, supplier: Omit<Supplier, "id">) => void;
   updateSupplier: (budgetItemId: string, supplierId: string, supplier: Partial<Supplier>) => void;
   deleteSupplier: (budgetItemId: string, supplierId: string) => void;
+  setAWinnerSupplier: (budgetItemId: string, supplierId: string, supplier: Partial<Supplier>) => void;
   addGuest: (guest: Omit<Guest, "id">) => void;
   updateGuest: (id: string, guest: Partial<Guest>) => void;
   deleteGuest: (id: string) => void;
@@ -31,15 +33,15 @@ const SAMPLE_EVENTS: EventData[] = [
 
 const SAMPLE_BUDGET_ITEMS: BudgetItem[] = [
   { id: "b1", eventId: "e1", name: "Buffet", suppliers: [
-    { id: "s1", company: "Buffet Premium", price: 12000, contact: "(11) 99999-0001", status: "Contrato Fechado" },
-    { id: "s2", company: "Gourmet Express", price: 15000, contact: "(11) 99999-0002", status: "Descartado" },
-  ]},
+    { id: "s1", company: "Buffet Premium", price: 12000, contact: "(11) 99999-0001", status: "Contrato Fechado", winner: true },
+    { id: "s2", company: "Gourmet Express", price: 15000, contact: "(11) 99999-0002", status: "Descartado", winner: false },
+  ], hasAWinner: true},
   { id: "b2", eventId: "e1", name: "Som e Iluminação", suppliers: [
-    { id: "s3", company: "AudioMax", price: 8000, contact: "(11) 99999-0003", status: "Em negociação" },
-  ]},
+    { id: "s3", company: "AudioMax", price: 8000, contact: "(11) 99999-0003", status: "Em negociação", winner: false },
+  ], hasAWinner: false},
   { id: "b3", eventId: "e1", name: "Espaço", suppliers: [
-    { id: "s4", company: "Centro de Convenções SP", price: 20000, contact: "(11) 99999-0004", status: "Contrato Fechado" },
-  ]},
+    { id: "s4", company: "Centro de Convenções SP", price: 20000, contact: "(11) 99999-0004", status: "Contrato Fechado", winner: false },
+  ], hasAWinner: false},
 ];
 
 const SAMPLE_GUESTS: Guest[] = [
@@ -91,6 +93,7 @@ export function EventProvider({ children }: { children: React.ReactNode }) {
       ? { ...b, suppliers: b.suppliers.map(s => s.id === supplierId ? { ...s, ...data } : s) }
       : b
     ));
+    toast.success("Fornecedor atualizado com sucesso!");
   }, []);
 
   const deleteSupplier = useCallback((budgetItemId: string, supplierId: string) => {
@@ -98,7 +101,16 @@ export function EventProvider({ children }: { children: React.ReactNode }) {
       ? { ...b, suppliers: b.suppliers.filter(s => s.id !== supplierId) }
       : b
     ));
+    toast.success("Fornecedor deletado com sucesso!");
   }, []);
+  
+  const setAWinnerSupplier = useCallback((budgetItemId: string, supplierId: string, data: Partial<Supplier>) => {
+    setBudgetItems(prev => prev.map(b => b.id === budgetItemId
+      ? {...b , hasAWinner: true,  suppliers: b.suppliers.map(s => s.id === supplierId ? { ...s, ...data} : {...s, status: "Descartado"}) }
+      : b
+    ));
+    toast.success("Fornecedor selecionado com sucesso!");
+  }, [])
 
   const addGuest = useCallback((guest: Omit<Guest, "id">) => {
     setGuests(prev => [...prev, { ...guest, id: generateId() }]);
@@ -118,7 +130,7 @@ export function EventProvider({ children }: { children: React.ReactNode }) {
       addEvent, updateEvent, deleteEvent,
       addBudgetItem, updateBudgetItem, deleteBudgetItem,
       addSupplier, updateSupplier, deleteSupplier,
-      addGuest, updateGuest, deleteGuest,
+      addGuest, updateGuest, deleteGuest, setAWinnerSupplier
     }}>
       {children}
     </EventContext.Provider>
