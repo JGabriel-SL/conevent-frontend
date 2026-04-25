@@ -5,7 +5,7 @@ metadata:
   labels:
     app: conevent-frontend
 spec:
-  replicas: 2 # Mantém 2 instâncias rodando para alta disponibilidade
+  replicas: 2
   selector:
     matchLabels:
       app: conevent-frontend
