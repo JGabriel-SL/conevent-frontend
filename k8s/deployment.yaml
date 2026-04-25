@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: conevent-frontend-deploy
+  labels:
+    app: conevent-frontend
+spec:
+  replicas: 2 # Mantém 2 instâncias rodando para alta disponibilidade
+  selector:
+    matchLabels:
+      app: conevent-frontend
+  template:
+    metadata:
+      labels:
+        app: conevent-frontend
+    spec:
+      containers:
+      - name: conevent-frontend
+        image: jgabrielsld/conevent-frontend:v2
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "64Mi"
+          limits:
+            cpu: "200m"
+            memory: "128Mi"
