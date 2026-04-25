@@ -25,7 +25,7 @@ export default function Dashboard() {
 
   const upcomingEvents = events
     .filter(e => e.status !== "Cancelado" && e.status !== "Concluído")
-    .sort((a, b) => a.date.localeCompare(b.date))
+    .sort((a, b) => a.iniDate.localeCompare(b.iniDate))
     .slice(0, 5);
 
   const metrics = [
