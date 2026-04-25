@@ -17,7 +17,7 @@ spec:
       containers:
       - name: conevent-frontend
         image: jgabrielsld/conevent-frontend:v2
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
         resources:
