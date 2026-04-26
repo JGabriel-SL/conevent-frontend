@@ -5,6 +5,8 @@ import { Calendar, DollarSign, Mail, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { eventsService } from '../services/eventsService';
+import { useEffect, useState } from 'react';
 
 const statusColors: Record<string, string> = {
   Planejamento: "bg-warning/10 text-warning border-warning/20",
@@ -14,8 +16,28 @@ const statusColors: Record<string, string> = {
 };
 
 export default function Dashboard() {
-  const { events, budgetItems, guests } = useEvents();
+  const {budgetItems, guests } = useEvents();
   const navigate = useNavigate();
+  const [events, setEvents] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchEvents() {
+      try {
+        const data = await eventsService.getAllEvents();
+        console.log(data);
+        setEvents(data);
+      } catch (err) {
+        setError('Erro ao buscar os eventos do servidor.');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchEvents();
+  }, []);
 
   const activeEvents = events.filter(e => e.status !== "Concluído" && e.status !== "Cancelado").length;
   const negotiatingBudgets = budgetItems.reduce(

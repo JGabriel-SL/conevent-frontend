@@ -93,7 +93,7 @@ export function EventProvider({ children }: { children: React.ReactNode }) {
       ? { ...b, suppliers: b.suppliers.map(s => s.id === supplierId ? { ...s, ...data } : s) }
       : b
     ));
-    toast.success("Fornecedor atualizado com sucesso!");
+    toast.success("Fornecedor atualizada com sucesso!");
   }, []);
 
   const deleteSupplier = useCallback((budgetItemId: string, supplierId: string) => {
